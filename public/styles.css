@@ -165,6 +165,7 @@ button {
 /* ---------- Tag field + custom dropdown ---------- */
 .tag-field {
   position: relative;
+  z-index: 1;
 }
 
 .tag-dropdown {
@@ -173,6 +174,7 @@ button {
   top: calc(100% + 4px);
   left: 0;
   right: 0;
+  z-index: 9999;
 
   max-height: 180px;
   overflow-y: auto;
@@ -309,6 +311,7 @@ button {
   background: #ffffff;
   color: #111111;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  overflow: visible;
 }
 .task-dialog::backdrop {
   background: rgba(0, 0, 0, 0.3);
@@ -318,6 +321,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow: visible;
 }
 .task-form h2 {
   margin-bottom: 6px;

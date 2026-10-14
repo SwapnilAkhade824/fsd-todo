@@ -55,6 +55,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =============================================================
+  // Reorder Task helper
+  // =============================================================
+
+  // Move all completed cards below all incomplete cards, preserving
+  // each group's existing order.
+  function reorderTasks() {
+    const cards = Array.from(taskList.querySelectorAll(".task-card"));
+    if (cards.length < 2) return;
+
+    const incomplete = cards.filter(
+      (c) => !c.classList.contains("task-completed"),
+    );
+    const completed = cards.filter((c) =>
+      c.classList.contains("task-completed"),
+    );
+
+    // Nothing to do if either group is empty
+    if (incomplete.length === 0 || completed.length === 0) return;
+
+    // appendChild on an existing node *moves* it, so this reorders in place.
+    [...incomplete, ...completed].forEach((card) => taskList.appendChild(card));
+  }
+
+  // =============================================================
   // Status bar
   // =============================================================
   function showStatus(msg, type = "success") {
@@ -232,10 +256,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       metaParts.push(date);
     }
-    if (task.dueDate && !task.isCompleted) {
-      const todayStr = new Date().toISOString().slice(0, 10);
-      if (task.dueDate < todayStr) date.classList.add("overdue");
-    }
 
     // Tag (inline, next to date)
     if (task.tag) {
@@ -294,7 +314,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const tasks = await api(API_TASKS);
       taskList.replaceChildren();
       if (!Array.isArray(tasks) || tasks.length === 0) renderEmptyState();
-      else tasks.forEach((t) => renderTask(t));
+      else{
+        tasks.forEach((t) => renderTask(t));
+        reorderTasks();
+      }
     } catch (err) {
       showStatus(err.message, "error");
     } finally {
@@ -318,6 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
       checkbox.checked = !!updated.isCompleted;
       card.classList.toggle("task-completed", !!updated.isCompleted);
       task.isCompleted = updated.isCompleted;
+      reorderTasks();
     } catch (err) {
       checkbox.checked = !desired;
       showStatus(err.message, "error");
@@ -407,6 +431,7 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify({ task, tag, dueDate }),
         });
         renderTask(created, { prepend: true });
+        reorderTasks();
         showStatus("Task added.", "success");
       }
       dialog.close();

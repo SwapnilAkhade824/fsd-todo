@@ -79,7 +79,7 @@ const Todo = mongoose.model("Todo", TodoSchema, "todo");
  */
 app.get("/api/tasks", async (req, res) => {
     try {
-        const tasks = await Todo.find({}).sort({ createdAt: -1 });
+        const tasks = await Todo.find({}).sort({ isCompleted: 1, createdAt: -1 });
         res.status(200).json(tasks);
     } catch (err) {
         res.status(500).json({ error: err.message });
